@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "cpu.h"
 #include "memory.h"
@@ -15,6 +16,20 @@ uint64_t load_program(const char *filename, uint8_t *memory) {
     return length;
 }
 
+uint8_t get_next_byte(const uint8_t *memory, struct CPU *cpu) {
+    return memory[cpu->eip++];
+}
+
+uint32_t read_next_word(const uint8_t *memory, struct CPU *cpu) {
+    uint8_t bytes[4];
+
+    for (int i = 0; i < 4; i++) {
+        bytes[i] = get_next_byte(memory, cpu);
+    }
+
+    return bytes[0] | (bytes[1] << 8) | (bytes[2] << 16) | (bytes[3] << 24);
+}
+
 int main(const int argc, char **argv) {
     struct CPU cpu;
     uint8_t memory[MEMORY_SIZE];
@@ -22,7 +37,7 @@ int main(const int argc, char **argv) {
     initialize_memory(memory);
     initialize_CPU(&cpu);
 
-    auto filename = "test.o";
+    auto filename = "test.bin";
     if (argc > 1) {
         filename = argv[1];
     }
@@ -34,6 +49,34 @@ int main(const int argc, char **argv) {
     }
 
     printf("Program length: %llu\n", program_length);
+
+    // Print binary code for debugging
+    for (size_t i = 0; i < program_length; i++) {
+        printf("%02x ", get_next_byte(memory, &cpu));
+    }
+
+    // Main emulator loop
+    reset_CPU(&cpu);
+    while (cpu.eip < program_length) {
+        const auto opcode = get_next_byte(memory, &cpu);
+
+        if (opcode == 0xF4) {
+            // HLT, halt instruction
+            printf("\nHalt instruction");
+            //exit(1);
+        }
+
+        if (opcode >= 0xB8 && opcode <= 0xBF) {
+            // MOV, move immediate value to register
+            const auto val = read_next_word(memory, &cpu);
+            printf("\nMove instruction: ");
+            printf("%02x", val);
+
+            set_register(&cpu, opcode - 0xB8, val);
+        }
+    }
+
+    printf("\neax: %02x\necx: %02x", cpu.eax, cpu.ecx);
 
     return 0;
 }

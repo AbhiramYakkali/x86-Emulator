@@ -9,3 +9,6 @@ struct CPU {
 
 void initialize_CPU(struct CPU *cpu);
 void reset_CPU(struct CPU *cpu);
+
+void set_register(struct CPU *cpu, uint32_t reg, uint32_t value);
+uint32_t get_register(const struct CPU *cpu, uint32_t reg);
