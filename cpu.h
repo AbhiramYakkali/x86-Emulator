@@ -5,6 +5,8 @@ struct CPU {
     uint32_t eax, ebx, ecx, edx;
     uint32_t esp, ebp, esi, edi;
     uint32_t eip, eflags;
+
+    uint16_t cs, ds, ss, es, fs, gs;
 };
 
 void initialize_CPU(struct CPU *cpu);

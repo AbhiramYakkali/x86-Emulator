@@ -4,6 +4,6 @@ section .text
 global _start
 
 _start:
-    mov eax, 0x89ABCDEF
-    mov ecx, 0x05
+    mov [10], ecx
+    mov ecx, 10
     hlt

@@ -49,6 +49,7 @@ int main(const int argc, char **argv) {
     }
 
     printf("Program length: %llu\n", program_length);
+    cpu.ds = program_length;
 
     // Print binary code for debugging
     for (size_t i = 0; i < program_length; i++) {
@@ -66,6 +67,7 @@ int main(const int argc, char **argv) {
             //exit(1);
         }
 
+        // MOV instructions
         if (opcode >= 0xB8 && opcode <= 0xBF) {
             // MOV, move immediate value to register
             const auto val = read_next_word(memory, &cpu);
@@ -73,6 +75,11 @@ int main(const int argc, char **argv) {
             printf("%02x", val);
 
             set_register(&cpu, opcode - 0xB8, val);
+        }
+        if (opcode == 0xA1) {
+            // MOV, move byte at immediate memory location to EAX
+            const auto address = read_next_word(memory, &cpu);
+            cpu.eax = read_memory_relative(memory, address, &cpu);
         }
     }
 
