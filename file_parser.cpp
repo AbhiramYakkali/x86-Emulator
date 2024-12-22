@@ -8,13 +8,13 @@
 #include <sstream>
 #include <iostream>
 
-// Returns whether parsing was successful or not
-bool parse_file(const std::string file_name) {
+// Returns the number of instructions in the file, 0 if error encountered
+uint64_t parse_file(const std::string file_name) {
     std::ifstream file(file_name);
 
     if (!file.is_open()) {
         std::cout << "File " << file_name << " does not exist" << std::endl;
-        return false;
+        return 0;
     }
 
     std::string line;
@@ -39,5 +39,9 @@ bool parse_file(const std::string file_name) {
         instructions.push_back(instruction);
     }
 
-    return true;
+    return instructions.size();
+}
+
+std::vector<std::string> get_instruction(const uint32_t instruction) {
+    return instructions[instruction];
 }
