@@ -15,14 +15,15 @@ void cpu::reset() {
     ebx = 0;
     ecx = 0;
     edx = 0;
+    esp = 0;
+    ebp = 0;
     esi = 0;
     edi = 0;
-    ebp = 0;
     eip = 0;
     eflags = 0;
 }
 
-void cpu::set_register(const int reg, const uint32_t value) {
+void cpu::set_register(const uint32_t reg, const uint32_t value) {
     switch (reg) {
         case REG_EAX:
             eax = value;
@@ -56,6 +57,9 @@ void cpu::set_register(const int reg, const uint32_t value) {
             break;
     }
 }
+void cpu::set_register(std::string reg, const uint32_t value) {
+    set_register(registers[reg], value);
+}
 
 uint32_t cpu::get_register(const int reg) const {
     switch (reg) {
@@ -67,6 +71,8 @@ uint32_t cpu::get_register(const int reg) const {
             return ecx;
         case REG_EDX:
             return edx;
+        case REG_ESP:
+            return esp;
         case REG_ESI:
             return esi;
         case REG_EDI:
@@ -81,4 +87,17 @@ uint32_t cpu::get_register(const int reg) const {
             printf("Invalid register value in get_register: %d\n", reg);
             return 0;
     }
+}
+
+void cpu::initialize_register_map() {
+    registers["eax"] = REG_EAX;
+    registers["ebx"] = REG_EBX;
+    registers["ecx"] = REG_ECX;
+    registers["edx"] = REG_EDX;
+    registers["esi"] = REG_ESI;
+    registers["edi"] = REG_EDI;
+    registers["ebp"] = REG_EBP;
+    registers["esp"] = REG_ESP;
+    registers["eip"] = REG_EIP;
+    registers["eflags"] = REG_EFLAGS;
 }

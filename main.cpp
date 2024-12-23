@@ -3,8 +3,12 @@
 #define NORMAL_EXIT 0
 #define PARSING_ERROR (-1)
 
+#include <functional>
+#include <map>
+
 #include "cpu.h"
 #include "file_parser.h"
+#include "instruction_runner.h"
 
 int main(const int argc, char *argv[]) {
     auto file_name = "file.asm";
@@ -21,9 +25,12 @@ int main(const int argc, char *argv[]) {
     }
 
     cpu cpu;
+    const instruction_runner runner;
 
     while (cpu.get_register(REG_EIP) < instruction_count) {
         const auto instruction = get_instruction(cpu.get_register(REG_EIP));
+
+        runner.run_instruction(instruction, &cpu);
     }
 
     return 0;

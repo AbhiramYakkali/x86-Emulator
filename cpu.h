@@ -4,7 +4,10 @@
 
 #ifndef CPU_H
 #define CPU_H
+
 #include <cstdint>
+#include <map>
+#include <string>
 
 #define REG_EAX 0
 #define REG_EBX 1
@@ -21,10 +24,15 @@ class cpu {
 public:
     cpu();
     void reset();
-    void set_register(int reg, uint32_t value);
-    uint32_t get_register(int reg) const;
+    void set_register(uint32_t reg, uint32_t value);
+    void set_register(std::string reg, uint32_t value);
+    [[nodiscard]] uint32_t get_register(int reg) const;
 
 private:
+    void initialize_register_map();
+
+    std::map<std::string, uint32_t> registers;
+
     uint32_t eax, ebx, ecx, edx;
     uint32_t esi, edi, ebp, esp;
     uint32_t eip, eflags;

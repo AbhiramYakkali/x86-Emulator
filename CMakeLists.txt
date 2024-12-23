@@ -7,4 +7,6 @@ add_executable(x86_Emulator main.cpp
         file_parser.cpp
         file_parser.h
         cpu.cpp
-        cpu.h)
+        cpu.h
+        instruction_runner.cpp
+        instruction_runner.h)
