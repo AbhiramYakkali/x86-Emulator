@@ -23,7 +23,7 @@ uint32_t instruction_runner::determine_operand_type(const std::string &operand, 
     };
     if (is_integer(operand)) return OPERAND_IMMEDIATE;
 
-    printf("Unable to determine operand type for operand: %s", operand.c_str());
+    printf("Unable to determine operand type for operand: %s\n", operand.c_str());
     return OPERAND_INVALID;
 }
 
@@ -42,31 +42,52 @@ uint32_t instruction_runner::decode_immediate(const std::string &immediate) {
     return static_cast<uint32_t>(stoul(immediate));
 }
 
+uint32_t instruction_runner::decode_memory_address(const std::string &memory_address, cpu* cpu) {
+    // Determine the type of addressing (immediate or register relative)
+    const auto address_type = determine_operand_type(memory_address, cpu);
+
+    if (address_type == OPERAND_IMMEDIATE) {
+        return decode_immediate(memory_address);
+    }
+    if (address_type == OPERAND_REGISTER) {
+        return cpu->get_register(memory_address);
+    }
+
+    printf("Unrecognized memory address format: %s\n", memory_address.c_str());
+    return 0;
+}
+
 uint32_t instruction_runner::get_value_from_operand(const std::string &operand, cpu *cpu) {
     switch (determine_operand_type(operand, cpu)) {
         case OPERAND_MEMORY: {
             // Isolate the value inside brackets and determine if it's a register or immediate
             const auto memory_address = operand.substr(1, operand.length() - 2);
 
-            // Determine the type of addressing (immediate or register relative)
-            const auto address_type = determine_operand_type(memory_address, cpu);
-
-            if (address_type == OPERAND_IMMEDIATE) {
-                return cpu->get_memory_byte(decode_immediate(memory_address));
-            }
-            if (address_type == OPERAND_REGISTER) {
-                return cpu->get_memory_byte(cpu->get_register(memory_address));
-            }
-            printf("Unrecognized memory address: %s", memory_address.c_str());
-            return 0;
+            return cpu->get_memory_byte(decode_memory_address(memory_address, cpu));
         }
         case OPERAND_IMMEDIATE:
-            return static_cast<uint32_t>(stoul(operand));
+            return decode_immediate(operand);
         case OPERAND_REGISTER:
             return cpu->get_register(operand);
         default:
-            printf("Unable to determine operand type for operand: %s", operand.c_str());
+            printf("Unable to read value from operand: %s\n", operand.c_str());
             return 0;
+    }
+}
+
+void instruction_runner::set_value_to_operand(const std::string &operand, const uint32_t value, cpu *cpu) {
+    switch (determine_operand_type(operand, cpu)) {
+        case OPERAND_MEMORY: {
+            const auto memory_address = operand.substr(1, operand.length() - 2);
+            cpu->set_memory_byte(decode_memory_address(memory_address, cpu), value);
+            break;
+        }
+        case OPERAND_REGISTER:
+            cpu->set_register(operand, value);
+            break;
+        default:
+            printf("Unable to write value to operand: %s\n", operand.c_str());
+            break;
     }
 }
 
@@ -75,7 +96,6 @@ uint32_t instruction_runner::get_value_from_operand(const std::string &operand, 
 // Returns 1 if specified mnemonic does not exist
 uint32_t instruction_runner::run_instruction(const std::vector<std::string>& instruction, cpu* cpu) const {
     instruction_function_map.at(instruction.at(0))(instruction, cpu);
-    std::cout << determine_operands_types(instruction, cpu) << std::endl;
 
     return 0;
 }
@@ -85,5 +105,6 @@ void instruction_runner::initialize_instruction_function_map() {
 }
 
 void instruction_runner::run_instruction_move(const std::vector<std::string>& instruction, cpu* cpu) {
-    cpu->set_register(instruction.at(1), static_cast<uint32_t>(stoul(instruction.at(2))));
+    const auto value = get_value_from_operand(instruction[2], cpu);
+    set_value_to_operand(instruction[1], value, cpu);
 }

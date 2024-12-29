@@ -34,11 +34,13 @@ private:
 
     // Converts an immediate string (100, 0x100, etc.) into a uint32
     static uint32_t decode_immediate(const std::string& immediate);
+    // Returns the address associated with a memory address based on addressing type (immediate, register, etc.)
+    static uint32_t decode_memory_address(const std::string& memory_address, cpu* cpu);
 
     // Takes in operand and returns the value from register, immediate, or memory
     static uint32_t get_value_from_operand(const std::string &operand, cpu* cpu);
     // Takes in operand sets a value to register or memory
-    void set_value_to_operand(const std::string &operand, uint32_t value, cpu* cpu) const;
+    static void set_value_to_operand(const std::string &operand, uint32_t value, cpu* cpu) ;
 
     // Functions for specific instructions
     static void run_instruction_move(const std::vector<std::string>& instruction, cpu* cpu);

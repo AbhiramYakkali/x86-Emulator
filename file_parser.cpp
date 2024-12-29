@@ -22,8 +22,6 @@ uint64_t parse_file(const std::string file_name) {
     while (std::getline(file, line)) {
         std::vector<std::string> instruction;
 
-        std::cout << line << std::endl;
-
         std::istringstream iss(line);
         std::string word;
         while (iss >> word) {

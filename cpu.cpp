@@ -8,6 +8,7 @@
 
 cpu::cpu() {
     reset();
+    initialize_register_map();
 }
 
 void cpu::reset() {

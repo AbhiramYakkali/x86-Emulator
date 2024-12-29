@@ -40,5 +40,9 @@ int main(const int argc, char *argv[]) {
         cpu.increment_eip();
     }
 
+    printf("eax: %d\n", cpu.get_register(REG_EAX));
+    printf("ebx: %d\n", cpu.get_register(REG_EBX));
+    printf("ecx: %d\n", cpu.get_register(REG_ECX));
+
     return 0;
 }

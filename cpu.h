@@ -9,16 +9,16 @@
 #include <map>
 #include <string>
 
-#define REG_EAX 0
-#define REG_EBX 1
-#define REG_ECX 2
-#define REG_EDX 3
-#define REG_ESP 4
-#define REG_EBP 5
-#define REG_ESI 6
-#define REG_EDI 7
-#define REG_EIP 8
-#define REG_EFLAGS 9
+#define REG_EAX 1
+#define REG_EBX 2
+#define REG_ECX 3
+#define REG_EDX 4
+#define REG_ESP 5
+#define REG_EBP 6
+#define REG_ESI 7
+#define REG_EDI 8
+#define REG_EIP 9
+#define REG_EFLAGS 10
 
 // 4KB of memory by default
 #define MEMORY_SIZE 4096
