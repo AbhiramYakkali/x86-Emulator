@@ -30,7 +30,14 @@ int main(const int argc, char *argv[]) {
     while (cpu.get_register(REG_EIP) < instruction_count) {
         const auto instruction = get_instruction(cpu.get_register(REG_EIP));
 
+        // Handle halt here, not worth making a new function for it
+        if (instruction.at(0) == "hlt") {
+            exit(0);
+        }
+
         runner.run_instruction(instruction, &cpu);
+
+        cpu.increment_eip();
     }
 
     return 0;

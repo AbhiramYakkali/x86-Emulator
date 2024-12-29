@@ -20,13 +20,24 @@
 #define REG_EIP 8
 #define REG_EFLAGS 9
 
+// 4KB of memory by default
+#define MEMORY_SIZE 4096
+
 class cpu {
 public:
     cpu();
     void reset();
     void set_register(uint32_t reg, uint32_t value);
     void set_register(std::string reg, uint32_t value);
-    [[nodiscard]] uint32_t get_register(int reg) const;
+    [[nodiscard]] uint32_t get_register(uint32_t reg) const;
+    [[nodiscard]] uint32_t get_register(const std::string& reg);
+
+    void set_memory_byte(uint32_t address, uint8_t value);
+    [[nodiscard]] uint8_t get_memory_byte(uint32_t address) const;
+
+    void increment_eip();
+
+    [[nodiscard]] bool is_valid_register(const std::string& reg) const;
 
 private:
     void initialize_register_map();
@@ -36,6 +47,8 @@ private:
     uint32_t eax, ebx, ecx, edx;
     uint32_t esi, edi, ebp, esp;
     uint32_t eip, eflags;
+
+    uint8_t memory[MEMORY_SIZE];
 };
 
 #endif //CPU_H

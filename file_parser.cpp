@@ -36,6 +36,7 @@ uint64_t parse_file(const std::string file_name) {
             instruction.push_back(word);
         }
 
+        instruction.resize(4, "");
         instructions.push_back(instruction);
     }
 

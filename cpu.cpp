@@ -61,7 +61,7 @@ void cpu::set_register(std::string reg, const uint32_t value) {
     set_register(registers[reg], value);
 }
 
-uint32_t cpu::get_register(const int reg) const {
+uint32_t cpu::get_register(const uint32_t reg) const {
     switch (reg) {
         case REG_EAX:
             return eax;
@@ -87,6 +87,25 @@ uint32_t cpu::get_register(const int reg) const {
             printf("Invalid register value in get_register: %d\n", reg);
             return 0;
     }
+}
+uint32_t cpu::get_register(const std::string& reg) {
+    return get_register(registers[reg]);
+}
+
+void cpu::set_memory_byte(const uint32_t address, const uint8_t value) {
+    memory[address] = value;
+}
+
+uint8_t cpu::get_memory_byte(const uint32_t address) const {
+    return memory[address];
+}
+
+void cpu::increment_eip() {
+    eip++;
+}
+
+bool cpu::is_valid_register(const std::string& reg) const {
+    return registers.contains(reg);
 }
 
 void cpu::initialize_register_map() {
