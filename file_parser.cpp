@@ -10,6 +10,8 @@
 
 // Returns the number of instructions in the file, 0 if error encountered
 uint64_t parse_file(const std::string file_name) {
+    std::vector<std::string> valid_size_specifiers = {"byte", "word", "dword", "qword"};
+
     std::ifstream file(file_name);
 
     if (!file.is_open()) {
@@ -18,9 +20,10 @@ uint64_t parse_file(const std::string file_name) {
     }
 
     std::string line;
-    // Read each line of the file, then split it into terms: mnemonic, op1, op2
+    // Read each line of the file, then split it into terms: mnemonic, op1, op2, size specifier
     while (std::getline(file, line)) {
         std::vector<std::string> instruction;
+        std::string size_specifier;
 
         std::istringstream iss(line);
         std::string word;
@@ -28,6 +31,9 @@ uint64_t parse_file(const std::string file_name) {
             // Remove comma at the end of operand if it exists
             if (word.back() == ',') {
                 word.pop_back();
+            } else if (std::find(valid_size_specifiers.begin(), valid_size_specifiers.end(), word) != valid_size_specifiers.end()) {
+                size_specifier = word;
+                continue;
             }
 
             transform(word.begin(), word.end(), word.begin(), tolower);
@@ -35,6 +41,7 @@ uint64_t parse_file(const std::string file_name) {
         }
 
         instruction.resize(4, "");
+        instruction.push_back(size_specifier);
         instructions.push_back(instruction);
     }
 
