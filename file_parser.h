@@ -12,7 +12,7 @@
 // optional operand is usually used for size specifier
 inline std::vector<std::vector<std::string>> instructions;
 
-uint64_t parse_file(std::string file_name);
+uint64_t parse_file(const std::string& file_name);
 std::vector<std::string> get_instruction(uint32_t instruction);
 
 #endif //FILE_PARSER_H

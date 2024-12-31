@@ -6,6 +6,7 @@
 #define INSTRUCTION_RUNNER_H
 
 #include <functional>
+#include <variant>
 
 #include "cpu.h"
 
@@ -14,6 +15,8 @@
 #define OPERAND_REGISTER 2
 #define OPERAND_MEMORY 3
 #define OPERAND_INVALID 4
+
+using value_size = std::variant<uint8_t, uint16_t, uint32_t, uint64_t>;
 
 class instruction_runner {
 public:
@@ -28,9 +31,9 @@ private:
 
     // Helper functions for running instructions
     // Returns OPERAND_ + NONE, IMMEDIATE, REGISTER, MEMORY, or INVALID
-    [[nodiscard]] static uint32_t determine_operand_type(const std::string &operand, cpu* cpu);
+    [[nodiscard]] static uint32_t determine_operand_type(const std::string &operand, const cpu* cpu);
     // Returns a three digit number (ex: 210 for register, immediate, none) representing all operand types
-    static uint32_t determine_operands_types(const std::vector<std::string>& instruction, cpu* cpu);
+    static uint32_t determine_operands_types(const std::vector<std::string>& instruction, const cpu* cpu);
 
     // Converts an immediate string (100, 0x100, etc.) into a uint32
     static uint32_t decode_immediate(const std::string& immediate);
@@ -38,9 +41,9 @@ private:
     static uint32_t decode_memory_address(const std::string& memory_address, cpu* cpu);
 
     // Takes in operand and returns the value from register, immediate, or memory
-    static uint32_t get_value_from_operand(const std::string &operand, cpu* cpu);
+    static value_size get_value_from_operand(const std::string &operand, const std::string& size, cpu* cpu);
     // Takes in operand sets a value to register or memory
-    static void set_value_to_operand(const std::string &operand, uint32_t value, cpu* cpu) ;
+    static void set_value_to_operand(const std::string &operand, value_size value, const std::string& size, cpu* cpu);
 
     // Functions for specific instructions
     static void run_instruction_move(const std::vector<std::string>& instruction, cpu* cpu);

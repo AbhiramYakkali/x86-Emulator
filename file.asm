@@ -1,5 +1,5 @@
-mov eax, 100
-mov [10], 75
-mov ebx, [10]
-mov [eax], ebx
-mov ecx, [eax]
+mov dword eax, 100
+mov byte [10], 75
+mov dword ebx, [7]
+mov dword [eax], ebx
+mov dword ecx, [eax]

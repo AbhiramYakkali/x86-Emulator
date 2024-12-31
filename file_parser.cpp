@@ -9,7 +9,7 @@
 #include <iostream>
 
 // Returns the number of instructions in the file, 0 if error encountered
-uint64_t parse_file(const std::string file_name) {
+uint64_t parse_file(const std::string& file_name) {
     std::vector<std::string> valid_size_specifiers = {"byte", "word", "dword", "qword"};
 
     std::ifstream file(file_name);
