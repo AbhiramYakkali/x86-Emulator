@@ -33,7 +33,14 @@ public:
     [[nodiscard]] uint32_t get_register(const std::string& reg);
 
     void set_memory_byte(uint32_t address, uint8_t value);
+    void set_memory_word(uint32_t address, uint16_t value);
+    void set_memory_dword(uint32_t address, uint32_t value);
+    void set_memory_qword(uint32_t address, uint64_t value);
+
     [[nodiscard]] uint8_t get_memory_byte(uint32_t address) const;
+    [[nodiscard]] uint16_t get_memory_word(uint32_t address) const;
+    [[nodiscard]] uint32_t get_memory_dword(uint32_t address) const;
+    [[nodiscard]] uint64_t get_memory_qword(uint32_t address) const;
 
     void increment_eip();
 

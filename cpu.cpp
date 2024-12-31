@@ -9,6 +9,9 @@
 cpu::cpu() {
     reset();
     initialize_register_map();
+    for (unsigned char & i : memory) {
+        i = 0;
+    }
 }
 
 void cpu::reset() {
@@ -97,8 +100,41 @@ void cpu::set_memory_byte(const uint32_t address, const uint8_t value) {
     memory[address] = value;
 }
 
+void cpu::set_memory_word(const uint32_t address, const uint16_t value) {
+    set_memory_byte(address, value >> 8);
+    set_memory_byte(address + 1, value & 0x00FF);
+}
+
+void cpu::set_memory_dword(const uint32_t address, const uint32_t value) {
+    set_memory_word(address, value >> 16);
+    set_memory_word(address + 2, value & 0x0000FFFF);
+}
+
+void cpu::set_memory_qword(const uint32_t address, const uint64_t value) {
+    set_memory_dword(address, value >> 32);
+    set_memory_dword(address + 4, value & 0x00000000FFFFFFFF);
+}
+
 uint8_t cpu::get_memory_byte(const uint32_t address) const {
     return memory[address];
+}
+
+uint16_t cpu::get_memory_word(const uint32_t address) const {
+    const auto top_half = get_memory_byte(address);
+    const auto bottom_half = get_memory_byte(address + 1);
+    return static_cast<uint16_t>(top_half) << 8 | bottom_half;
+}
+
+uint32_t cpu::get_memory_dword(const uint32_t address) const {
+    const auto top_half = get_memory_word(address);
+    const auto bottom_half = get_memory_word(address + 2);
+    return static_cast<uint32_t>(top_half) << 16 | bottom_half;
+}
+
+uint64_t cpu::get_memory_qword(const uint32_t address) const {
+    const auto top_half = get_memory_dword(address);
+    const auto bottom_half = get_memory_dword(address + 4);
+    return static_cast<uint64_t>(top_half) << 32 | bottom_half;
 }
 
 void cpu::increment_eip() {
