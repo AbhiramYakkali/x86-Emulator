@@ -28,6 +28,8 @@ uint64_t parse_file(const std::string& file_name) {
         std::istringstream iss(line);
         std::string word;
         while (iss >> word) {
+            if (word[0] == ';') break; // Check for comments
+
             // Remove comma at the end of operand if it exists
             if (word.back() == ',') {
                 word.pop_back();
@@ -40,9 +42,12 @@ uint64_t parse_file(const std::string& file_name) {
             instruction.push_back(word);
         }
 
-        instruction.resize(4, "");
-        instruction.push_back(size_specifier);
-        instructions.push_back(instruction);
+        // Skip lines that are comments
+        if (!instruction.empty()) {
+            instruction.resize(4, "");
+            instruction.push_back(size_specifier);
+            instructions.push_back(instruction);
+        }
     }
 
     return instructions.size();
