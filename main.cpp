@@ -43,6 +43,7 @@ int main(const int argc, char *argv[]) {
     printf("eax: %d\n", cpu.get_register(REG_EAX));
     printf("ebx: %d\n", cpu.get_register(REG_EBX));
     printf("ecx: %d\n", cpu.get_register(REG_ECX));
+    printf("edx: %d\n", cpu.get_register(REG_EDX));
 
     return 0;
 }

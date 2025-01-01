@@ -57,8 +57,8 @@ uint32_t instruction_runner::decode_memory_address(const std::string &memory_add
     return 0;
 }
 
-value_size instruction_runner::get_value_from_operand(const std::string &operand, const std::string& size, cpu *cpu) {
-    switch (determine_operand_type(operand, cpu)) {
+value_size instruction_runner::get_value_from_operand(const std::string &operand, const std::string &size, uint32_t operand_type, cpu *cpu) {
+    switch (operand_type) {
         case OPERAND_MEMORY: {
             // Isolate the value inside brackets and determine if it's a register or immediate
             const auto memory_address_string = operand.substr(1, operand.length() - 2);
@@ -79,19 +79,23 @@ value_size instruction_runner::get_value_from_operand(const std::string &operand
 
             if (size == "byte") return static_cast<uint8_t>(value);
             if (size == "word") return static_cast<uint16_t>(value);
-            if (size == "dword") return value; // Value is uint32_t by default, no need to cast
             if (size == "qword") return static_cast<uint64_t>(value);
+            return value; // Default size is 32 bits (dword)
         }
         case OPERAND_REGISTER:
             return cpu->get_register(operand);
         default:
             printf("Unable to read value from operand: %s\n", operand.c_str());
-            return static_cast<uint8_t>(0);
+        return static_cast<uint8_t>(0);
     }
 }
 
-void instruction_runner::set_value_to_operand(const std::string &operand, const value_size value, const std::string& size, cpu *cpu) {
-    switch (determine_operand_type(operand, cpu)) {
+value_size instruction_runner::get_value_from_operand(const std::string &operand, const std::string& size, cpu *cpu) {
+    return get_value_from_operand(operand, size, determine_operand_type(operand, cpu), cpu);
+}
+
+void instruction_runner::set_value_to_operand(const std::string &operand, value_size value, const std::string &size, uint32_t operand_type, cpu *cpu) {
+    switch (operand_type) {
         case OPERAND_MEMORY: {
             const auto memory_address_string = operand.substr(1, operand.length() - 2);
             const auto memory_address = decode_memory_address(memory_address_string, cpu);
@@ -105,11 +109,15 @@ void instruction_runner::set_value_to_operand(const std::string &operand, const 
         }
         case OPERAND_REGISTER:
             cpu->set_register(operand, std::get<uint32_t>(value));
-            break;
+        break;
         default:
             printf("Unable to write value to operand: %s\n", operand.c_str());
-            break;
+        break;
     }
+}
+
+void instruction_runner::set_value_to_operand(const std::string &operand, const value_size value, const std::string& size, cpu *cpu) {
+    set_value_to_operand(operand, value, size, determine_operand_type(operand, cpu), cpu);
 }
 
 
@@ -123,10 +131,22 @@ uint32_t instruction_runner::run_instruction(const std::vector<std::string>& ins
 
 void instruction_runner::initialize_instruction_function_map() {
     instruction_function_map["mov"] = run_instruction_move;
+    instruction_function_map["xchg"] = run_instruction_xchg;
 }
 
 void instruction_runner::run_instruction_move(const std::vector<std::string>& instruction, cpu* cpu) {
     const auto& size_specifier = instruction[4];
-    const auto value = get_value_from_operand(instruction[2], instruction[4], cpu);
+    const auto value = get_value_from_operand(instruction[2], size_specifier, cpu);
     set_value_to_operand(instruction[1], value, size_specifier, cpu);
 }
+
+void instruction_runner::run_instruction_xchg(const std::vector<std::string> &instruction, cpu *cpu) {
+    const auto& size_specifier = instruction[4];
+
+    const auto val1 = get_value_from_operand(instruction[1], size_specifier, cpu);
+    const auto val2 = get_value_from_operand(instruction[2], size_specifier, cpu);
+
+    set_value_to_operand(instruction[2], val1, size_specifier, cpu);
+    set_value_to_operand(instruction[1], val2, size_specifier, cpu);
+}
+

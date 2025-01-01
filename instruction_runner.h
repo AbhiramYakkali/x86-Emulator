@@ -42,11 +42,16 @@ private:
 
     // Takes in operand and returns the value from register, immediate, or memory
     static value_size get_value_from_operand(const std::string &operand, const std::string& size, cpu* cpu);
+    // Allow this function to be called with operand type known beforehand
+    // Allows instruction functions to check operand types without running d_o_t multiple times
+    static value_size get_value_from_operand(const std::string &operand, const std::string& size, uint32_t operand_type, cpu* cpu);
     // Takes in operand sets a value to register or memory
     static void set_value_to_operand(const std::string &operand, value_size value, const std::string& size, cpu* cpu);
+    static void set_value_to_operand(const std::string &operand, value_size value, const std::string& size, uint32_t operand_type, cpu* cpu);
 
     // Functions for specific instructions
     static void run_instruction_move(const std::vector<std::string>& instruction, cpu* cpu);
+    static void run_instruction_xchg(const std::vector<std::string>& instruction, cpu* cpu);
 };
 
 #endif //INSTRUCTION_RUNNER_H
